@@ -26,7 +26,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_rds_stop" {
 
 resource "aws_cloudwatch_event_rule" "rds_stop_cloudwatch_rule" {
   name                = "rds_stop_lambda_trigger"
-  schedule_expression = var.ec2_stop_instance_cron
+  schedule_expression = var.rds_stop_instance_cron
 }
 
 resource "aws_cloudwatch_event_target" "rds_stop_lambda" {
@@ -44,7 +44,7 @@ data "archive_file" "sandbox_rds-terminate-lambda-function" {
 
 resource "aws_lambda_function" "rds-terminate-lambda-function" {
   filename         = "${path.module}/output/rds-terminate-lambda-function.zip"
-  function_name    = "${var.function_prefix}rds-terminate-lambda-function"
+  function_name    = "${var.function_prefix}rds_terminate_lambda_function"
   role             = aws_iam_role.iam_role_for_rds_cleanup.arn
   handler          = "rds-terminate-lambda-function.lambda_handler"
   source_code_hash = data.archive_file.sandbox_rds-terminate-lambda-function.output_base64sha256
@@ -63,7 +63,7 @@ resource "aws_lambda_permission" "allow_cloudwatch_rds-terminate-lambda-function
 
 resource "aws_cloudwatch_event_rule" "rds-terminate-lambda-function_cloudwatch_rule" {
   name                = "rds-terminate-lambda-function_lambda_trigger"
-  schedule_expression = var.ec2_terminate_instance_cron
+  schedule_expression = var.rds_terminate_instance_cron
 }
 
 resource "aws_cloudwatch_event_target" "rds-terminate-lambda-function_lambda" {
