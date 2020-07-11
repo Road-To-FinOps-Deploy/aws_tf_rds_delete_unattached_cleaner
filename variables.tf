@@ -9,3 +9,4 @@ variable "ec2_stop_instance_cron" {
 variable "function_prefix" {
   default = ""
 }
+
