@@ -14,6 +14,6 @@ variable "function_prefix" {
   default = ""
 }
 
-variable "region"{
+variable "region" {
   default = "eu-west-1"
 }
