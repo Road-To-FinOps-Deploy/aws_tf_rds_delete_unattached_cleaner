@@ -138,7 +138,7 @@ class RDSTermination:
 
 def email(reciver_email, sender_email, region, messege_content):
     messege = build_email(
-        "RDS With No Connections", "%s" % reciver_email, sender_email, body=f"{messege_content}"
+        "RDS With No Connections",reciver_email, sender_email, body=f"{messege_content}"
     )  # subject, to, from, text
 
     send_email(messege, region)
@@ -190,7 +190,7 @@ def send_email(msg, region, session=boto3):
 
 def lambda_handler(event, context):
     dryrun = os.environ['DRYRUN']#True
-    region = os.environ['REGION']
+    email_region = os.environ['REGION']
     reciver_email = os.environ['RECIVER_EMAIL']
     sender_email = os.environ['SENDER_EMAIL']
 
@@ -209,5 +209,5 @@ def lambda_handler(event, context):
         if delete_list != []:
             email_data.append(delete_list)
     print("this is the email")
-    email(reciver_email, sender_email, region, email_data)
+    email(reciver_email, sender_email, email_region, email_data)
 
