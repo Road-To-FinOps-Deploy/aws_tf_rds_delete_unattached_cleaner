@@ -25,4 +25,3 @@ def lambda_handler(event, context):
                         DBInstanceIdentifier=instance['DBInstanceIdentifier']
                     )
                     print('Stopped database instance: ', instance['DBInstanceIdentifier'])
-lambda_handler(None, None)

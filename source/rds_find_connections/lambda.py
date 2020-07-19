@@ -77,7 +77,7 @@ class RDSTermination:
 
     # Function to delete the instances reported in final list.It deletes instances with 0 connection
     # and status as available
-    def terminate_rds_instances(self, run):
+    def terminate_rds_instances(self, run, region):
         dry_run=run
         if dry_run:
             message = 'DRY-RUN'
@@ -117,20 +117,25 @@ class RDSTermination:
                             DBInstanceIdentifier=rdsname,
                             SkipFinalSnapshot=True,
                         )
-                    print('[{}]: RDS instance {} deleted'.format(message, rdsname))
+                    print('[{}]: RDS instance {} deleted in {}'.format(message, rdsname, region))
 
                 except BaseException:
-                    print("[ERROR]: {} rds instance not found".format(rdsname))
+                    print("[ERROR]: {} rds instance not found in {}".format(rdsname, region))
         else:
-            print("No RDS instance marked for deletion")
+            print(f"No RDS instance marked for deletion in {region}")
 
 
 def lambda_handler(event, context):
     dryrun = os.environ['DRYRUN']#True
-    region_name = os.environ['REGION'] #eu-west-1
-    cloud_watch_object = boto3.client('cloudwatch', region_name=region_name)
-    rds_object = boto3.client('rds', region_name=region_name)
-    rds_termination_object = RDSTermination(cloud_watch_object, rds_object)
-    
-    rds_termination_object.terminate_rds_instances(dryrun)
+    # Get list of regions
+    ec2_client = boto3.client('ec2')
+    regions = [region['RegionName']
+               for region in ec2_client.describe_regions()['Regions']] # need to add option to pass in one region
+
+    # Iterate over each region
+    for region in regions:
+        cloud_watch_object = boto3.client('cloudwatch', region_name=region)
+        rds_object = boto3.client('rds', region_name=region)
+        rds_termination_object = RDSTermination(cloud_watch_object, rds_object)
+        rds_termination_object.terminate_rds_instances(dryrun, region)
 
