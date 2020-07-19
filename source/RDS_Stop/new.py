@@ -1,7 +1,7 @@
 #https://stackoverflow.com/questions/60567109/how-to-get-list-of-active-connections-on-rds-using-boto3
 import datetime
 import boto3
-
+import os
 
 class RDSTermination:
     #Strandard constructor for RDSTermination class
@@ -77,7 +77,8 @@ class RDSTermination:
 
     # Function to delete the instances reported in final list.It deletes instances with 0 connection
     # and status as available
-    def terminate_rds_instances(self, dry_run=True):
+    def terminate_rds_instances(self, run):
+        dry_run=run
         if dry_run:
             message = 'DRY-RUN'
         else:
@@ -128,5 +129,6 @@ if __name__ == "__main__":
     cloud_watch_object = boto3.client('cloudwatch', region_name='eu-west-1')
     rds_object = boto3.client('rds', region_name='eu-west-1')
     rds_termination_object = RDSTermination(cloud_watch_object, rds_object)
-    rds_termination_object.terminate_rds_instances(dry_run=True)
+    run = os.environ['DRYRUN']#True
+    rds_termination_object.terminate_rds_instances(run)
 
