@@ -125,7 +125,7 @@ class RDSTermination:
             print("No RDS instance marked for deletion")
 
 
-if __name__ == "__main__":
+def lambda_handler(event, context):
     dryrun = os.environ['DRYRUN']#True
     region_name = os.environ['REGION'] #eu-west-1
     cloud_watch_object = boto3.client('cloudwatch', region_name=region_name)
