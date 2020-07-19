@@ -1,3 +1,4 @@
+#https://stackoverflow.com/questions/60567109/how-to-get-list-of-active-connections-on-rds-using-boto3
 import datetime
 import boto3
 
@@ -124,7 +125,8 @@ class RDSTermination:
 
 
 if __name__ == "__main__":
-    cloud_watch_object = boto3.client('cloudwatch', region_name='us-east-1')
-    rds_object = boto3.client('rds', region_name='us-east-1')
+    cloud_watch_object = boto3.client('cloudwatch', region_name='eu-west-1')
+    rds_object = boto3.client('rds', region_name='eu-west-1')
     rds_termination_object = RDSTermination(cloud_watch_object, rds_object)
     rds_termination_object.terminate_rds_instances(dry_run=True)
+
