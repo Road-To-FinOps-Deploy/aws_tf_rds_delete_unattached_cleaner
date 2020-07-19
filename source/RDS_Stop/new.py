@@ -126,9 +126,11 @@ class RDSTermination:
 
 
 if __name__ == "__main__":
-    cloud_watch_object = boto3.client('cloudwatch', region_name='eu-west-1')
-    rds_object = boto3.client('rds', region_name='eu-west-1')
+    dryrun = os.environ['DRYRUN']#True
+    region_name = os.environ['REGION'] #eu-west-1
+    cloud_watch_object = boto3.client('cloudwatch', region_name=region_name)
+    rds_object = boto3.client('rds', region_name=region_name)
     rds_termination_object = RDSTermination(cloud_watch_object, rds_object)
-    run = os.environ['DRYRUN']#True
-    rds_termination_object.terminate_rds_instances(run)
+    
+    rds_termination_object.terminate_rds_instances(dryrun)
 
