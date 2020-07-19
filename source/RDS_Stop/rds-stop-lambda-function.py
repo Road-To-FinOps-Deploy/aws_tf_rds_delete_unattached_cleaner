@@ -19,7 +19,6 @@ def lambda_handler(event, context):
         # Stop the instances
         for instance in instances['DBInstances']:
             if instance['Engine'] != 'aurora':
-                import pdb; pdb.set_trace()
 
                 if instance['DBInstanceStatus'] == 'available':
                     rds_client.stop_db_instance(
