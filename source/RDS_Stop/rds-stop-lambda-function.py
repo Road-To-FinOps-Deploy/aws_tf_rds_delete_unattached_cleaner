@@ -18,9 +18,11 @@ def lambda_handler(event, context):
         instances = rds_client.describe_db_instances()
         # Stop the instances
         for instance in instances['DBInstances']:
-            if instance['DBInstanceStatus'] == 'available':
-                rds_client.stop_db_instance(
-                    DBInstanceIdentifier=instance['DBInstanceIdentifier']
-                )
-                print('Stopped database instance: ', instance['DBInstanceIdentifier'])
+            if instance['Engine'] != 'aurora':
 
+                if instance['DBInstanceStatus'] == 'available':
+                    rds_client.stop_db_instance(
+                        DBInstanceIdentifier=instance['DBInstanceIdentifier']
+                    )
+                    print('Stopped database instance: ', instance['DBInstanceIdentifier'])
+lambda_handler(None, None)
