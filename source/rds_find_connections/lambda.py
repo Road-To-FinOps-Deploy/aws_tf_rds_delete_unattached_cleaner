@@ -1,7 +1,15 @@
 #https://stackoverflow.com/questions/60567109/how-to-get-list-of-active-connections-on-rds-using-boto3
 import datetime
 import boto3
+from botocore.exceptions import ClientError
 import os
+import logging
+from io import StringIO
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+log = logging.getLogger()
 
 class RDSTermination:
     #Strandard constructor for RDSTermination class
@@ -78,6 +86,7 @@ class RDSTermination:
     # Function to delete the instances reported in final list.It deletes instances with 0 connection
     # and status as available
     def terminate_rds_instances(self, run, region):
+        delete_list = []
         dry_run=run
         if dry_run:
             message = 'DRY-RUN'
@@ -117,16 +126,75 @@ class RDSTermination:
                             DBInstanceIdentifier=rdsname,
                             SkipFinalSnapshot=True,
                         )
+                    
                     print('[{}]: RDS instance {} deleted in {}'.format(message, rdsname, region))
+                    delete_list.append('[{}]: RDS instance {} deleted in {}'.format(message, rdsname, region))
 
                 except BaseException:
                     print("[ERROR]: {} rds instance not found in {}".format(rdsname, region))
         else:
             print(f"No RDS instance marked for deletion in {region}")
+        return delete_list
+
+def email(reciver_email, sender_email, region, messege_content):
+    messege = build_email(
+        "RDS With No Connections", "%s" % reciver_email, sender_email, body=f"{messege_content}"
+    )  # subject, to, from, text
+
+    send_email(messege, region)
+    print("run email")
+
+
+
+
+def build_email(subject, to_email, from_email, body=None, attachments={}):
+    msg = MIMEMultipart("mixed")
+    msg["Subject"] = subject
+    msg["To"] = ",".join(to_email) if isinstance(to_email, list) else to_email
+    msg["From"] = from_email
+
+    if body and isinstance(body, dict):
+        textual_message = MIMEMultipart("alternative")
+        for m_type, message in body.items():
+            part = MIMEText(message, m_type)
+            textual_message.attach(part)
+        msg.attach(textual_message)
+    elif body and isinstance(body, str):
+        msg.attach(MIMEText(body))
+
+    if attachments:
+        for filename, data in attachments.items():
+            att = MIMEApplication(data)
+            att.add_header("Content-Disposition", "attachment", filename=filename)
+            msg.attach(att)
+
+    return msg
+
+
+def send_email(msg, region, session=boto3):
+    ses = session.client("ses", region_name=region)
+    try:
+        response = ses.send_raw_email(
+            Source=msg["From"],
+            Destinations=msg["To"].split(","),
+            RawMessage={"Data": msg.as_string()},
+        )
+    except ClientError as e:
+        log.error(e.response["Error"]["Message"])
+    else:
+        id = response["MessageId"]
+        log.info(f"Email sent! Message ID: {id}")
+
+
 
 
 def lambda_handler(event, context):
     dryrun = os.environ['DRYRUN']#True
+    region = os.environ['REGION']
+    reciver_email = os.environ['RECIVER_EMAIL']
+    sender_email = os.environ['SENDER_EMAIL']
+
+    email_data = []
     # Get list of regions
     ec2_client = boto3.client('ec2')
     regions = [region['RegionName']
@@ -137,5 +205,9 @@ def lambda_handler(event, context):
         cloud_watch_object = boto3.client('cloudwatch', region_name=region)
         rds_object = boto3.client('rds', region_name=region)
         rds_termination_object = RDSTermination(cloud_watch_object, rds_object)
-        rds_termination_object.terminate_rds_instances(dryrun, region)
+        delete_list= rds_termination_object.terminate_rds_instances(dryrun, region)
+        if delete_list != []:
+            email_data.append(delete_list)
+    print("this is the email")
+    email(reciver_email, sender_email, region, email_data)
 

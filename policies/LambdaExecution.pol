@@ -8,7 +8,8 @@
                 "ec2:*",
                 "iam:GetRole",
                 "kms:*",
-                "rds:*"
+                "rds:*", 
+                "ses:SendRawEmail"
             ],
             "Effect": "Allow",
             "Resource": "*"

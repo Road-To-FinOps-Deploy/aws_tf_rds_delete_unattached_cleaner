@@ -17,6 +17,9 @@ resource "aws_lambda_function" "rds_find_connections" {
   environment {
     variables = {
       DRYRUN = "True"
+      REGION = var.region
+      RECIVER_EMAIL = var.reciver_email
+      SENDER_EMAIL = var.sender_email
     }
   }
 }

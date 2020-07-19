@@ -17,3 +17,10 @@ variable "function_prefix" {
 variable "region"{
   default = "eu-west-1"
 }
+
+variable "reciver_email"{
+  default = "example@email.com"
+}
+
+variable "sender_email"{
+}
