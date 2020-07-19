@@ -1,5 +1,5 @@
 variable "rds_terminate_instance_cron" {
- default = "cron(0 23 ? * TUE *)"
+  default = "cron(0 23 ? * TUE *)"
 }
 
 variable "rds_stop_instance_cron" {
@@ -14,3 +14,6 @@ variable "function_prefix" {
   default = ""
 }
 
+variable "region"{
+  default = "eu-west-1"
+}

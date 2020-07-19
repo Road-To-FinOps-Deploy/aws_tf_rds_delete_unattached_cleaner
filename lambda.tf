@@ -14,6 +14,12 @@ resource "aws_lambda_function" "rds_find_connections" {
   runtime          = "python3.7"
   memory_size      = "512"
   timeout          = "30"
+  environment {
+    variables = {
+      REGION = var.region
+      DRYRUN = "True"
+    }
+  }
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_rds_find_connections" {
