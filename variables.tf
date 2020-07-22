@@ -14,13 +14,13 @@ variable "function_prefix" {
   default = ""
 }
 
-variable "region"{
+variable "region" {
   default = "eu-west-1"
 }
 
-variable "reciver_email"{
-  default = "example@email.com"
+variable "reciver_email" {
+  default = "example@hotmail.com"
 }
 
-variable "sender_email"{
+variable "sender_email" {
 }

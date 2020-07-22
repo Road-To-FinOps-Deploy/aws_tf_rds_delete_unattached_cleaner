@@ -9,6 +9,7 @@ This checks all regions
 
 module "aws_bas_lambda_scheduler" {
   source = "/aws_tf_rds_delete_unattached"
+  sender_email = "example@hotmail.com"
 }
 
 ## Optional Inputs

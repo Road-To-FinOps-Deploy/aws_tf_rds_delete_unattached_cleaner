@@ -16,10 +16,10 @@ resource "aws_lambda_function" "rds_find_connections" {
   timeout          = "30"
   environment {
     variables = {
-      DRYRUN = "True"
-      REGION = var.region
+      DRYRUN        = "True"
+      REGION        = var.region
       RECIVER_EMAIL = var.reciver_email
-      SENDER_EMAIL = var.sender_email
+      SENDER_EMAIL  = var.sender_email
     }
   }
 }
