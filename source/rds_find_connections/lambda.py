@@ -140,10 +140,12 @@ def email(reciver_email, sender_email, region, messege_content):
     messege = build_email(
         "RDS With No Connections",reciver_email, sender_email, body=f"{messege_content}"
     )  # subject, to, from, text
+    try:
+        send_email(messege, region)
+        print("run email")
 
-    send_email(messege, region)
-    print("run email")
-
+    except BaseException as e:
+        print(e)
 
 
 

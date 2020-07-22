@@ -12,6 +12,8 @@ module "aws_bas_lambda_scheduler" {
   sender_email = "example@hotmail.com"
 }
 
+Note:you must approve the address for sender before it can send emails
+
 ## Optional Inputs
 
 | Name | Description | Type | Default | Required |
